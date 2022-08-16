@@ -11,12 +11,12 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-bike_df = pd.read_csv('./bike_train.csv')
+bike_df = pd.read_csv('./kaggle/train.csv')
 print(bike_df.shape)
 bike_df.head(10)
 
@@ -48,7 +48,7 @@ bike_df.info()
 # %%
 
 
-# 문자열을 datetime 타입으로 변경. 
+# 문자열을 datetime 타입으로 변경.
 bike_df['datetime'] = bike_df.datetime.apply(pd.to_datetime)
 
 # datetime 타입에서 년, 월, 일, 시간 추출
@@ -84,16 +84,7 @@ for i, feature in enumerate(cat_features):
     # 시본의 barplot을 이용해 칼럼값에 따른 count의 평균값을 표현
     sns.barplot(x=feature, y='count', data=bike_df, ax=axs[row][col])
 
-
 # %%
-
-
-
-
-
-# %%
-
-
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 # log 값 변환 시 NaN등의 이슈로 log() 가 아닌 log1p() 를 이용하여 RMSLE 계산
@@ -108,7 +99,7 @@ def rmsle(y, pred):
 def rmse(y,pred):
     return np.sqrt(mean_squared_error(y,pred))
 
-# MSE, RMSE, RMSLE 를 모두 계산 
+# MSE, RMSE, RMSLE 를 모두 계산
 def evaluate_regr(y,pred):
     rmsle_val = rmsle(y,pred)
     rmse_val = rmse(y,pred)
@@ -118,9 +109,9 @@ def evaluate_regr(y,pred):
 
 
 # ### log1p와 expm1을 사용하는 이유
-# * 너무 작은 값은 수치 변환 시 0으로 변환됨 log0은 -Inf가 되므로 오류 발생. 
+# * 너무 작은 값은 수치 변환 시 0으로 변환됨 log0은 -Inf가 되므로 오류 발생.
 # * 때문에 변환전 값에 1을 더한 값을 로그 변환 할 필요가 있으며, 이를 위해 np.log1p()를 이용
-# * np.log1p()로 로그 변환된 값은 np.expm1()으로 다시 원본 변환될 수 있음. 
+# * np.log1p()로 로그 변환된 값은 np.expm1()으로 다시 원본 변환될 수 있음.
 
 # %%
 
@@ -143,7 +134,7 @@ var_2 = np.expm1(var_1)
 print(var_1, var_2)
 
 
-# ### 로그 변환, 피처 인코딩, 모델 학습/예측/평가 
+# ### 로그 변환, 피처 인코딩, 모델 학습/예측/평가
 
 # %%
 
@@ -167,13 +158,13 @@ evaluate_regr(y_test ,pred)
 
 
 def get_top_error_data(y_test, pred, n_tops = 5):
-    # DataFrame에 컬럼들로 실제 대여횟수(count)와 예측 값을 서로 비교 할 수 있도록 생성. 
+    # DataFrame에 컬럼들로 실제 대여횟수(count)와 예측 값을 서로 비교 할 수 있도록 생성.
     result_df = pd.DataFrame(y_test.values, columns=['real_count'])
     result_df['predicted_count']= np.round(pred)
     result_df['diff'] = np.abs(result_df['real_count'] - result_df['predicted_count'])
-    # 예측값과 실제값이 가장 큰 데이터 순으로 출력. 
+    # 예측값과 실제값이 가장 큰 데이터 순으로 출력.
     print(result_df.sort_values('diff', ascending=False)[:n_tops])
-    
+
 get_top_error_data(y_test,pred,n_tops=5)
 
 
@@ -250,7 +241,7 @@ X_features_ohe.head(10)
 # %%
 
 
-# 원-핫 인코딩이 적용된 feature 데이터 세트 기반으로 학습/예측 데이터 분할. 
+# 원-핫 인코딩이 적용된 feature 데이터 세트 기반으로 학습/예측 데이터 분할.
 X_train, X_test, y_train, y_test = train_test_split(X_features_ohe, y_target_log,
                                                     test_size=0.3, random_state=0)
 
@@ -263,7 +254,7 @@ def get_model_predict(model, X_train, X_test, y_train, y_test, is_expm1=False):
         pred = np.expm1(pred)
     print('###',model.__class__.__name__,'###')
     evaluate_regr(y_test, pred)
-# end of function get_model_predict    
+# end of function get_model_predict
 
 # model 별로 평가 수행
 lr_reg = LinearRegression()

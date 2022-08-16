@@ -20,6 +20,7 @@ y = 6 +4 * X+ np.random.randn(100,1)
 # X, y 데이터 셋 scatter plot으로 시각화
 plt.scatter(X, y)
 
+# X, y 의 데이터 셋만 주어집니다.
 
 # %%
 X.shape, y.shape
@@ -57,11 +58,24 @@ def get_weight_updates(w1, w0, X, y, learning_rate=0.01):
 
 
 # %%
-
-
 w0 = np.zeros((1,1))
+w0
+
+# %%
 w1 = np.zeros((1,1))
+w1
+
+# %%
+w1.T
+
+# %%
 y_pred = np.dot(X, w1.T) + w0
+y_pred
+
+# %%
+X
+
+# %%
 diff = y-y_pred
 print(diff.shape)
 w0_factors = np.ones((100,1))
@@ -117,7 +131,8 @@ plt.plot(X,y_pred)
 
 # %%
 
-
+# 실제 상황(대용량 데이터)에서는 샘플링한 데이터로 구한 결과값과
+# 크게 차이가 나지 않아서, 미니 배치 확률적 경사하강법을 사용한다.
 def stochastic_gradient_descent_steps(X, y, batch_size=10, iters=1000):
     w0 = np.zeros((1,1))
     w1 = np.zeros((1,1))
@@ -140,24 +155,20 @@ def stochastic_gradient_descent_steps(X, y, batch_size=10, iters=1000):
 
 # %%
 
-
+# 랜덤 순열
 np.random.permutation(100)
 
 
 # %%
-
-
 w1, w0 = stochastic_gradient_descent_steps(X, y, iters=1000)
 print("w1:",round(w1[0,0],3),"w0:",round(w0[0,0],3))
 y_pred = w1[0,0] * X + w0
 print('Stochastic Gradient Descent Total Cost:{0:.4f}'.format(get_cost(y, y_pred)))
 
-
-
+# -----------------------------------------------------
 # ## 5.4 사이킷런 LinearRegression을 이용한 보스턴 주택 가격 예측
-
+# -----------------------------------------------------
 # %%
-
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -167,7 +178,7 @@ import seaborn as sns
 from sklearn.datasets import load_boston
 import warnings
 warnings.filterwarnings('ignore')  #사이킷런 1.2 부터는 보스턴 주택가격 데이터가 없어진다는 warning 메시지 출력 제거
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 # boston 데이타셋 로드
 boston = load_boston()
@@ -214,6 +225,7 @@ for i , feature in enumerate(lm_features):
     row = int(i/4)
     col = i%4
     # 시본의 regplot을 이용해 산점도와 선형 회귀 직선을 함께 표현
+    # 선형 그래프가 양의 방향인지 음의 방향인지로 판단
     sns.regplot(x=feature , y='PRICE',data=bostonDF , ax=axs[row][col])
 
 
@@ -236,14 +248,15 @@ lr = LinearRegression()
 lr.fit(X_train ,y_train )
 y_preds = lr.predict(X_test)
 mse = mean_squared_error(y_test, y_preds)
+mse = mean_squared_error(y_test, y_preds)
 rmse = np.sqrt(mse)
 
+# print(lr.coef_)
 print('MSE : {0:.3f} , RMSE : {1:.3F}'.format(mse , rmse))
 print('Variance score : {0:.3f}'.format(r2_score(y_test, y_preds)))
 
 
 # %%
-
 
 print('절편 값:',lr.intercept_)
 print('회귀 계수값:', np.round(lr.coef_, 1))
@@ -273,6 +286,8 @@ X_data = bostonDF.drop(['PRICE'],axis=1,inplace=False)
 lr = LinearRegression()
 
 # cross_val_score( )로 5 Fold 셋으로 MSE 를 구한 뒤 이를 기반으로 다시  RMSE 구함.
+# cv = 5 , cross validation을 5번 수행하라는 뜻
+# neg_mean_squared_error는 MSE를 음수로 반환하므로 음수를 양수로 반환하기 위해 -1 을 곱합니다.
 neg_mse_scores = cross_val_score(lr, X_data, y_target, scoring="neg_mean_squared_error", cv = 5)
 rmse_scores  = np.sqrt(-1 * neg_mse_scores)
 avg_rmse = np.mean(rmse_scores)
@@ -301,10 +316,10 @@ X = np.arange(4).reshape(2,2)
 print('일차 단항식 계수 feature:\n',X )
 
 # degree = 2 인 2차 다항식으로 변환하기 위해 PolynomialFeatures를 이용하여 변환
-poly = PolynomialFeatures(degree=2)
-poly.fit(X)
-poly_ftr = poly.transform(X)
-print('변환된 2차 다항식 계수 feature:\n', poly_ftr)
+fe = PolynomialFeatures(degree=2)
+fe.fit(X)
+ft = fe.transform(X)
+print('변환된 2차 다항식 계수 feature:\n', ft)
 
 
 # 3차 다항식 결정값을 구하는 함수 polynomial_func(X) 생성. 즉 회귀식은 결정값 y = 1+ 2x_1 + 3x_1^2 + 4x_2^3
@@ -331,12 +346,12 @@ print('삼차 다항식 결정값: \n', y)
 
 
 # 3 차 다항식 변환
-poly_ftr = PolynomialFeatures(degree=3).fit_transform(X)
-print('3차 다항식 계수 feature: \n',poly_ftr)
+ft = PolynomialFeatures(degree=3).fit_transform(X)
+print('3차 다항식 계수 feature: \n',ft)
 
 # Linear Regression에 3차 다항식 계수 feature와 3차 다항식 결정값으로 학습 후 회귀 계수 확인
 model = LinearRegression()
-model.fit(poly_ftr,y)
+model.fit(ft,y)
 print('Polynomial 회귀 계수\n' , np.round(model.coef_, 2))
 print('Polynomial 회귀 Shape :', model.coef_.shape)
 
@@ -397,7 +412,8 @@ X_data = bostonDF.drop(['PRICE'],axis=1,inplace=False)
 X_train , X_test , y_train , y_test = train_test_split(X_data , y_target ,test_size=0.3, random_state=156)
 
 ## Pipeline을 이용하여 PolynomialFeatures 변환과 LinearRegression 적용을 순차적으로 결합.
-p_model = Pipeline([('poly', PolynomialFeatures(degree=3, include_bias=False)),
+# (주의)다항식의 degree에 따라, 오버피팅 되기가 쉽습니다.
+p_model = Pipeline([('poly', PolynomialFeatures(degree=2, include_bias=False)),
                   ('linear', LinearRegression())])
 
 p_model.fit(X_train, y_train)
@@ -432,10 +448,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import cross_val_score
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 # random 값으로 구성된 X값에 대해 Cosine 변환값을 반환.
-def true_fun(X):
+def true_func(X):
     return np.cos(1.5 * np.pi * X)
 
 # X는 0 부터 1까지 30개의 random 값을 순서대로 sampling 한 데이타 입니다.
@@ -444,17 +460,13 @@ n_samples = 30
 X = np.sort(np.random.rand(n_samples))
 
 # y 값은 cosine 기반의 true_fun() 에서 약간의 Noise 변동값을 더한 값입니다.
-y = true_fun(X) + np.random.randn(n_samples) * 0.1
+y = true_func(X) + np.random.randn(n_samples) * 0.1
 
 
 # %%
-
-
 plt.scatter(X, y)
 
-
 # %%
-
 
 plt.figure(figsize=(14, 5))
 degrees = [1, 4, 15]
@@ -483,7 +495,7 @@ for i in range(len(degrees)):
     # 예측값 곡선
     plt.plot(X_test, pipeline.predict(X_test[:, np.newaxis]), label="Model")
     # 실제 값 곡선
-    plt.plot(X_test, true_fun(X_test), '--', label="True function")
+    plt.plot(X_test, true_func(X_test), '--', label="True function")
     plt.scatter(X, y, edgecolor='b', s=20, label="Samples")
 
     plt.xlabel("x"); plt.ylabel("y"); plt.xlim((0, 1)); plt.ylim((-2, 2)); plt.legend(loc="best")
@@ -500,8 +512,10 @@ plt.show()
 
 
 # 앞의 LinearRegression예제에서 분할한 feature 데이터 셋인 X_data과 Target 데이터 셋인 Y_target 데이터셋을 그대로 이용
+import pandas as pd
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import cross_val_score
+from sklearn.datasets import load_boston
 
 # boston 데이타셋 로드
 boston = load_boston()
@@ -539,17 +553,20 @@ for alpha in alphas :
 
     #cross_val_score를 이용하여 5 fold의 평균 RMSE 계산
     neg_mse_scores = cross_val_score(ridge, X_data, y_target, scoring="neg_mean_squared_error", cv = 5)
-    avg_rmse = np.mean(np.sqrt(-1 * neg_mse_scores))
+    avg_rmse = np.mean(np.sqrt(-1 * neg_mse_scores)) # RMSE 계산
     print('alpha {0} 일 때 5 folds 의 평균 RMSE : {1:.3f} '.format(alpha,avg_rmse))
 
 
 # **각 alpha에 따른 회귀 계수 값을 시각화. 각 alpha값 별로 plt.subplots로 맷플롯립 축 생성**
 
 # %%
-
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+warnings.filterwarnings('ignore')  #사이킷런 1.2 부터는 보스턴 주택가격 데이터가 없어진다는 warning 메시지 출력 제거
 
 # 각 alpha에 따른 회귀 계수 값을 시각화하기 위해 5개의 열로 된 맷플롯립 축 생성
-fig , axs = plt.subplots(figsize=(18,6) , nrows=1 , ncols=5)
+fig , axs = plt.subplots(figsize=(18,6) , nrows=1 , ncols=len(alphas))
 # 각 alpha에 따른 회귀 계수 값을 데이터로 저장하기 위한 DataFrame 생성
 coeff_df = pd.DataFrame()
 
