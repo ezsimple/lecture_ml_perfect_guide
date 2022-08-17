@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ### 붓꽃 데이터로 PCA 변환을 위한 데이터 로딩 및 시각화 
+# ### 붓꽃 데이터로 PCA 변환을 위한 데이터 로딩 및 시각화
 
 # %%
 
@@ -9,7 +9,7 @@
 from sklearn.datasets import load_iris
 import pandas as pd
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 # 사이킷런 내장 데이터 셋 API 호출
 iris = load_iris()
@@ -27,7 +27,7 @@ irisDF.head(3)
 #setosa는 세모, versicolor는 네모, virginica는 동그라미로 표현
 markers=['^', 's', 'o']
 
-#setosa의 target 값은 0, versicolor는 1, virginica는 2. 각 target 별로 다른 shape으로 scatter plot 
+#setosa의 target 값은 0, versicolor는 1, virginica는 2. 각 target 별로 다른 shape으로 scatter plot
 for i, marker in enumerate(markers):
     x_axis_data = irisDF[irisDF['target']==i]['sepal_length']
     y_axis_data = irisDF[irisDF['target']==i]['sepal_width']
@@ -63,6 +63,7 @@ iris_scaled.shape
 
 from sklearn.decomposition import PCA
 
+# Feature 수가 4개인 모델을 2차원 데이터로 변환
 pca = PCA(n_components=2)
 
 #fit( )과 transform( ) 을 호출하여 PCA 변환 데이터 반환
@@ -89,7 +90,7 @@ irisDF_pca.head(3)
 #setosa를 세모, versicolor를 네모, virginica를 동그라미로 표시
 markers=['^', 's', 'o']
 
-#pca_component_1 을 x축, pc_component_2를 y축으로 scatter plot 수행. 
+#pca_component_1 을 x축, pc_component_2를 y축으로 scatter plot 수행.
 for i, marker in enumerate(markers):
     x_axis_data = irisDF_pca[irisDF_pca['target']==i]['pca_component_1']
     y_axis_data = irisDF_pca[irisDF_pca['target']==i]['pca_component_2']
@@ -132,19 +133,18 @@ scores_pca = cross_val_score(rcf, pca_X, iris.target, scoring='accuracy', cv=3 )
 print('PCA 변환 데이터 교차 검증 개별 정확도:',scores_pca)
 print('PCA 변환 데이터 평균 정확도:', np.mean(scores_pca))
 
-
+# -----------------------------------
 # ### 신용카드 데이터 세트 PCA 변환
-# 
+# -----------------------------------
 # **데이터 로드 및 컬럼명 변환**
 
 # %%
-
 
 # header로 의미없는 첫행 제거, iloc로 기존 id 제거
 import pandas as pd
 pd.set_option('display.max_columns', 30)
 
-df = pd.read_excel('pca_credit_card.xls', header=1, sheet_name='Data').iloc[:,1:]
+df = pd.read_excel('./data/pca_credit_card.xls', header=1, sheet_name='Data').iloc[:,1:]
 print(df.shape)
 df.head(3)
 
@@ -170,8 +170,9 @@ X_features.info()
 
 import seaborn as sns
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
+# feature들간의 상관관계 표시 (상관관계가 높은 피쳐를 찾기위해)
 corr = X_features.corr()
 plt.figure(figsize=(14,14))
 
@@ -191,6 +192,8 @@ print('대상 속성명:', cols_bill)
 
 # 2개의 PCA 속성을 가진 PCA 객체 생성하고, explained_variance_ratio_ 계산을 위해 fit( ) 호출
 scaler = StandardScaler()
+
+# StandardScaler로 변환
 df_cols_scaled = scaler.fit_transform(X_features[cols_bill])
 
 pca = PCA(n_components=2)
@@ -222,7 +225,7 @@ from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 df_scaled = scaler.fit_transform(X_features)
 
-# 6개의 Component를 가진 PCA 변환을 수행하고 cross_val_score( )로 분류 예측 수행. 
+# 6개의 Component를 가진 PCA 변환을 수행하고 cross_val_score( )로 분류 예측 수행.
 pca = PCA(n_components=6)
 df_pca = pca.fit_transform(df_scaled)
 scores_pca = cross_val_score(rcf, df_pca, y_target, scoring='accuracy', cv=3)

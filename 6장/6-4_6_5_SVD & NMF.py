@@ -12,7 +12,7 @@
 import numpy as np
 from numpy.linalg import svd
 
-# 4X4 Random 행렬 a 생성 
+# 4X4 Random 행렬 a 생성
 np.random.seed(121)
 a = np.random.randn(4,4)
 print(np.round(a, 3))
@@ -54,7 +54,7 @@ print(np.round(a,3))
 # %%
 
 
-# 다시 SVD를 수행하여 Sigma 값 확인 
+# 다시 SVD를 수행하여 Sigma 값 확인
 U, Sigma, Vt = svd(a)
 print(U.shape, Sigma.shape, Vt.shape)
 print('Sigma Value:\n',np.round(Sigma,3))
@@ -83,7 +83,7 @@ import numpy as np
 from scipy.sparse.linalg import svds
 from scipy.linalg import svd
 
-# 원본 행렬을 출력하고, SVD를 적용할 경우 U, Sigma, Vt 의 차원 확인 
+# 원본 행렬을 출력하고, SVD를 적용할 경우 U, Sigma, Vt 의 차원 확인
 np.random.seed(121)
 matrix = np.random.random((6, 6))
 print('원본 행렬:\n',matrix)
@@ -91,7 +91,7 @@ U, Sigma, Vt = svd(matrix, full_matrices=False)
 print('\n분해 행렬 차원:',U.shape, Sigma.shape, Vt.shape)
 print('\nSigma값 행렬:', Sigma)
 
-# Truncated SVD로 Sigma 행렬의 특이값을 4개로 하여 Truncated SVD 수행. 
+# Truncated SVD로 Sigma 행렬의 특이값을 4개로 하여 Truncated SVD 수행.
 num_components = 5
 U_tr, Sigma_tr, Vt_tr = svds(matrix, k=num_components)
 print('\nTruncated SVD 분해 행렬 차원:',U_tr.shape, Sigma_tr.shape, Vt_tr.shape)
@@ -109,7 +109,7 @@ print('\nTruncated SVD로 분해 후 복원 행렬:\n', matrix_tr)
 from sklearn.decomposition import TruncatedSVD, PCA
 from sklearn.datasets import load_iris
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 iris = load_iris()
 iris_ftrs = iris.data
@@ -133,17 +133,17 @@ from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 iris_scaled = scaler.fit_transform(iris_ftrs)
 
-# 스케일링된 데이터를 기반으로 TruncatedSVD 변환 수행 
+# 스케일링된 데이터를 기반으로 TruncatedSVD 변환 수행
 tsvd = TruncatedSVD(n_components=2)
 tsvd.fit(iris_scaled)
 iris_tsvd = tsvd.transform(iris_scaled)
 
-# 스케일링된 데이터를 기반으로 PCA 변환 수행 
+# 스케일링된 데이터를 기반으로 PCA 변환 수행
 pca = PCA(n_components=2)
 pca.fit(iris_scaled)
 iris_pca = pca.transform(iris_scaled)
 
-# TruncatedSVD 변환 데이터를 왼쪽에, PCA변환 데이터를 오른쪽에 표현 
+# TruncatedSVD 변환 데이터를 왼쪽에, PCA변환 데이터를 오른쪽에 표현
 fig, (ax1, ax2) = plt.subplots(figsize=(9,4), ncols=2)
 ax1.scatter(x=iris_tsvd[:,0], y= iris_tsvd[:,1], c= iris.target)
 ax2.scatter(x=iris_pca[:,0], y= iris_pca[:,1], c= iris.target)
@@ -153,7 +153,7 @@ ax2.set_title('PCA Transformed')
 
 # ## 6-4 NMF
 
-# ### NMF 
+# ### NMF
 
 # %%
 
@@ -161,7 +161,7 @@ ax2.set_title('PCA Transformed')
 from sklearn.decomposition import NMF
 from sklearn.datasets import load_iris
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
+#get_ipython().run_line_magic('matplotlib', 'inline')
 
 iris = load_iris()
 iris_ftrs = iris.data

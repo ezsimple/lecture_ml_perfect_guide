@@ -3,7 +3,7 @@
 
 # ### KDE(Kernel Density Estimation)의 이해
 
-# **seaborn의 distplot()을 이용하여 KDE 시각화**  
+# **seaborn의 distplot()을 이용하여 KDE 시각화**
 # https://seaborn.pydata.org/tutorial/distributions.html
 
 # %%
@@ -12,6 +12,7 @@
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 sns.set(color_codes=True)
@@ -19,7 +20,7 @@ sns.set(color_codes=True)
 np.random.seed(0)
 x = np.random.normal(0, 1, size=30)
 print(x)
-sns.distplot(x);
+sns.distplot(x, rug=True)
 
 
 # %%
@@ -37,7 +38,7 @@ sns.distplot(x, kde=False, rug=True)
 # %%
 
 
-sns.distplot(x, hist=False, rug=True);
+sns.distplot(x, hist=False, rug=True)
 
 
 # **개별 관측데이터에 대해 가우시안 커널 함수를 적용**
@@ -53,11 +54,11 @@ support = np.linspace(-4, 4, 200)
 
 kernels = []
 for x_i in x:
-    kernel = stats.norm(x_i, bandwidth).pdf(support)
+    kernel = stats.norm(x_i, bandwidth).pdf(support) # Gaussian Kernel 함수
     kernels.append(kernel)
     plt.plot(support, kernel, color="r")
 
-sns.rugplot(x, color=".2", linewidth=3);
+sns.rugplot(x, color=".2", linewidth=3)
 
 
 # %%
@@ -88,8 +89,8 @@ sns.kdeplot(x, bw=2, label="bw: 2")
 plt.legend();
 
 
-# ### 사이킷런을 이용한 Mean Shift 
-# 
+# ### 사이킷런을 이용한 Mean Shift
+#
 # make_blobs()를 이용하여 2개의 feature와 3개의 군집 중심점을 가지는 임의의 데이터 200개를 생성하고 MeanShift를 이용하여 군집화 수행
 
 # %%
@@ -99,7 +100,8 @@ import numpy as np
 from sklearn.datasets import make_blobs
 from sklearn.cluster import MeanShift
 
-X, y = make_blobs(n_samples=200, n_features=2, centers=3, 
+# centers 군집점수
+X, y = make_blobs(n_samples=200, n_features=2, centers=3,
                   cluster_std=0.8, random_state=0)
 
 meanshift= MeanShift(bandwidth=0.9)
@@ -124,6 +126,7 @@ print('cluster labels 유형:', np.unique(cluster_labels))
 
 from sklearn.cluster import estimate_bandwidth
 
+# quantile : 샘플의 정밀도
 bandwidth = estimate_bandwidth(X,quantile=0.25)
 print('bandwidth 값:', round(bandwidth,3))
 
@@ -138,16 +141,16 @@ clusterDF['target'] = y
 
 # estimate_bandwidth()로 최적의 bandwidth 계산
 best_bandwidth = estimate_bandwidth(X, quantile=0.25)
-
-meanshift= MeanShift(best_bandwidth)
+meanshift= MeanShift(bandwidth=best_bandwidth)
 cluster_labels = meanshift.fit_predict(X)
-print('cluster labels 유형:',np.unique(cluster_labels))    
+print('cluster labels 유형:',np.unique(cluster_labels))
 
 
 # %%
 
 
 import matplotlib.pyplot as plt
+from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 clusterDF['meanshift_label']  = cluster_labels
@@ -159,15 +162,15 @@ for label in unique_labels:
     label_cluster = clusterDF[clusterDF['meanshift_label']==label]
     center_x_y = centers[label]
     # 군집별로 다른 marker로 scatter plot 적용
-    plt.scatter(x=label_cluster['ftr1'], y=label_cluster['ftr2'], edgecolor='k', 
+    plt.scatter(x=label_cluster['ftr1'], y=label_cluster['ftr2'], edgecolor='k',
                 marker=markers[label] )
-    
+
     # 군집별 중심 시각화
     plt.scatter(x=center_x_y[0], y=center_x_y[1], s=200, color='white',
                 edgecolor='k', alpha=0.9, marker=markers[label])
-    plt.scatter(x=center_x_y[0], y=center_x_y[1], s=70, color='k', edgecolor='k', 
+    plt.scatter(x=center_x_y[0], y=center_x_y[1], s=70, color='k', edgecolor='k',
                 marker='$%d$' % label)
-    
+
 plt.show()
 
 

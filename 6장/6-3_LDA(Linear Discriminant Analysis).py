@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ### 붓꽃 데이터 셋에 LDA 적용하기 
+# ### 붓꽃 데이터 셋에 LDA 적용하기
 
 # %%
 
@@ -18,7 +18,8 @@ iris_scaled = StandardScaler().fit_transform(iris.data)
 
 
 lda = LinearDiscriminantAnalysis(n_components=2)
-# fit()호출 시 target값 입력 
+# fit()호출 시 target값 입력
+# (주의) LDA는 target값을 가져가므로, 비지도 학습이 아닙니다.
 lda.fit(iris_scaled, iris.target)
 iris_lda = lda.transform(iris_scaled)
 print(iris_lda.shape)
@@ -29,7 +30,7 @@ print(iris_lda.shape)
 
 import pandas as pd
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 lda_columns=['lda_component_1','lda_component_2']
 irisDF_lda = pd.DataFrame(iris_lda,columns=lda_columns)
@@ -57,7 +58,7 @@ plt.show()
 from sklearn.datasets import load_iris
 import pandas as pd
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 # 사이킷런 내장 데이터 셋 API 호출
 iris = load_iris()
@@ -84,7 +85,7 @@ irisDF_pca['target']=iris.target
 #setosa를 세모, versicolor를 네모, virginica를 동그라미로 표시
 markers=['^', 's', 'o']
 
-#pca_component_1 을 x축, pc_component_2를 y축으로 scatter plot 수행. 
+#pca_component_1 을 x축, pc_component_2를 y축으로 scatter plot 수행.
 for i, marker in enumerate(markers):
     x_axis_data = irisDF_pca[irisDF_pca['target']==i]['pca_component_1']
     y_axis_data = irisDF_pca[irisDF_pca['target']==i]['pca_component_2']
@@ -94,9 +95,6 @@ plt.legend()
 plt.xlabel('pca_component_1')
 plt.ylabel('pca_component_2')
 plt.show()
-
-
-# %%
 
 
 

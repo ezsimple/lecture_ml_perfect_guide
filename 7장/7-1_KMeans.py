@@ -12,7 +12,7 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 iris = load_iris()
 print('target name:', iris.target_names)
@@ -23,24 +23,21 @@ irisDF.head(3)
 
 # **KMeans 객체를 생성하고 군집화 수행**
 # * labels_ 속성을 통해 각 데이터 포인트별로 할당된 군집 중심점(Centroid)확인
-# * fit_predict(), fit_transform() 수행 결과 확인. 
+# * fit_predict(), fit_transform() 수행 결과 확인.
 
 # %%
-
-
-kmeans = KMeans(n_clusters=3, init='k-means++', max_iter=300,random_state=0)
+kmeans = KMeans(n_clusters=3, init='k-means++', max_iter=300, random_state=0)
 kmeans.fit(irisDF)
 
-
 # %%
 
-
+# (주의) target 값과는 다릅니다.
 print(kmeans.labels_)
 
 
 # %%
 
-
+# kmeans.labels_ 와 값이 같습니다.
 kmeans.fit_predict(irisDF)
 
 
@@ -60,7 +57,7 @@ iris.target, iris.target_names
 
 # %%
 
-
+# 주의) target과 cluster는 다른 의미 입니다.
 irisDF['target'] = iris.target
 irisDF['cluster']=kmeans.labels_
 irisDF.head(10)
@@ -106,7 +103,7 @@ marker1_ind = irisDF[irisDF['cluster']==1].index
 marker2_ind = irisDF[irisDF['cluster']==2].index
 
 # cluster값 0, 1, 2에 해당하는 Index로 각 cluster 레벨의 pca_x, pca_y 값 추출. o, s, ^ 로 marker 표시
-plt.scatter(x=irisDF.loc[marker0_ind,'pca_x'], y=irisDF.loc[marker0_ind,'pca_y'], marker='o') 
+plt.scatter(x=irisDF.loc[marker0_ind,'pca_x'], y=irisDF.loc[marker0_ind,'pca_y'], marker='o')
 plt.scatter(x=irisDF.loc[marker1_ind,'pca_x'], y=irisDF.loc[marker1_ind,'pca_y'], marker='s')
 plt.scatter(x=irisDF.loc[marker2_ind,'pca_x'], y=irisDF.loc[marker2_ind,'pca_y'], marker='^')
 
@@ -117,13 +114,11 @@ plt.show()
 
 
 # %%
+plt.scatter(x=irisDF.loc[:, 'pca_x'], y=irisDF.loc[:, 'pca_y'], c=irisDF['cluster'])
 
 
-plt.scatter(x=irisDF.loc[:, 'pca_x'], y=irisDF.loc[:, 'pca_y'], c=irisDF['cluster']) 
-
-
-# ### Clustering 알고리즘 테스트를 위한 데이터 생성 
-
+# ### Clustering 알고리즘 테스트를 위한 데이터 생성
+# (주의) make_blobs() 를 자주 사용하게 됩니다.
 # %%
 
 
@@ -131,8 +126,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
+# centers 수는 임의의 군집수로 설수
+# cluster_std 표준편차는 데이터 생성시 군집되도록 하기 위해 설정
 X, y = make_blobs(n_samples=200, n_features=2, centers=3, cluster_std=0.8, random_state=0)
 print(X.shape, y.shape)
 
@@ -141,23 +138,23 @@ unique, counts = np.unique(y, return_counts=True)
 print(unique,counts)
 
 
-# * n_samples: 생성할 총 데이터의 개수입니다. 디폴트는 100개입니다.  
-# 
-# 
+# * n_samples: 생성할 총 데이터의 개수입니다. 디폴트는 100개입니다.
+#
+#
 # * n_features: 데이터의 피처 개수입니다. 시각화를 목표로 할 경우 2개로 설정해 보통 첫 번째 피처는 x 좌표, 두 번째 피처
-# 는 y 좌표상에 표현합니다.  
-# 
-# 
+# 는 y 좌표상에 표현합니다.
+#
+#
 # * centers: int 값, 예를 들어 3으로 설정하면 군집의 개수를 나타냅니다. 그렇지 않고 ndarray 형태로 표현할 경우 개별 군
-# 집 중심점의 좌표를 의미합니다.  
-# 
-# 
+# 집 중심점의 좌표를 의미합니다.
+#
+#
 # * cluster_std: 생성될 군집 데이터의 표준 편차를 의미합니다. 만일 float 값 0.8과 같은 형태로 지정하면 군집 내에서 데이
-# 터가 표준편차 0.8을 가진 값으로 만들어집니다.   
+# 터가 표준편차 0.8을 가진 값으로 만들어집니다.
 # [0.8, 1,2, 0.6]과 같은 형태로 표현되면 3개의 군집에서 첫 번째 군집 내
 # 데이터의 표준편차는 0.8, 두 번째 군집 내 데이터의 표준 편차는 1.2, 세 번째 군집 내 데이터의 표준편차는 0.6으로 만듭
-# 니다.   
-# 군집별로 서로 다른 표준 편차를 가진 데이터 세트를 만들 때 사용합니다  
+# 니다.
+# 군집별로 서로 다른 표준 편차를 가진 데이터 세트를 만들 때 사용합니다
 
 # %%
 
@@ -175,10 +172,11 @@ clusterDF.head(10)
 
 
 target_list = np.unique(y)
-# 각 target별 scatter plot 의 marker 값들. 
+
+# 각 target별 scatter plot 의 marker 값들.
 markers=['o', 's', '^', 'P','D','H','x']
 # 3개의 cluster 영역으로 구분한 데이터 셋을 생성했으므로 target_list는 [0,1,2]
-# target==0, target==1, target==2 로 scatter plot을 marker별로 생성. 
+# target==0, target==1, target==2 로 scatter plot을 marker별로 생성.
 for target in target_list:
     target_cluster = clusterDF[clusterDF['target']==target]
     plt.scatter(x=target_cluster['ftr1'], y=target_cluster['ftr2'], edgecolor='k', marker=markers[target] )
@@ -209,7 +207,7 @@ kmeans.cluster_centers_
 # %%
 
 
-# KMeans 객체를 이용하여 X 데이터를 K-Means 클러스터링 수행 
+# KMeans 객체를 이용하여 X 데이터를 K-Means 클러스터링 수행
 kmeans = KMeans(n_clusters=3, init='k-means++', max_iter=200, random_state=0)
 cluster_labels = kmeans.fit_predict(X)
 clusterDF['kmeans_label']  = cluster_labels
@@ -219,19 +217,19 @@ centers = kmeans.cluster_centers_
 unique_labels = np.unique(cluster_labels)
 markers=['o', 's', '^', 'P','D','H','x']
 
-# 군집된 label 유형별로 iteration 하면서 marker 별로 scatter plot 수행. 
+# 군집된 label 유형별로 iteration 하면서 marker 별로 scatter plot 수행.
 for label in unique_labels:
     label_cluster = clusterDF[clusterDF['kmeans_label']==label]
-    plt.scatter(x=label_cluster['ftr1'], y=label_cluster['ftr2'], edgecolor='k', 
+    plt.scatter(x=label_cluster['ftr1'], y=label_cluster['ftr2'], edgecolor='k',
                 marker=markers[label] )
-    
+
     center_x_y = centers[label]
-    
-    # 군집별 중심 위치 좌표 시각화 
+
+    # 군집별 중심 위치 좌표 시각화
     plt.scatter(x=center_x_y[0], y=center_x_y[1], s=200, color='white',
                 alpha=0.9, edgecolor='k', marker=markers[label])
-    plt.scatter(x=center_x_y[0], y=center_x_y[1], s=70, color='k', edgecolor='k', 
-                marker='$%d$' % label)
+    plt.scatter(x=center_x_y[0], y=center_x_y[1], s=70, color='k', edgecolor='k',
+                marker='$%d$' % label) # 숫자를 마커로 표시
 
 plt.show()
 
