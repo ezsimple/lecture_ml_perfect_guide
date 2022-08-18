@@ -11,6 +11,7 @@ from sklearn.datasets import load_iris
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 iris = load_iris()
@@ -41,11 +42,11 @@ print(iris_result)
 # %%
 
 
-### 클러스터 결과를 담은 DataFrame과 사이킷런의 Cluster 객체등을 인자로 받아 클러스터링 결과를 시각화하는 함수  
+### 클러스터 결과를 담은 DataFrame과 사이킷런의 Cluster 객체등을 인자로 받아 클러스터링 결과를 시각화하는 함수
 def visualize_cluster_plot(clusterobj, dataframe, label_name, iscenter=True):
     if iscenter :
         centers = clusterobj.cluster_centers_
-        
+
     unique_labels = np.unique(dataframe[label_name].values)
     markers=['o', 's', '^', 'x', '*']
     isNoise=False
@@ -57,10 +58,10 @@ def visualize_cluster_plot(clusterobj, dataframe, label_name, iscenter=True):
             isNoise=True
         else :
             cluster_legend = 'Cluster '+str(label)
-        
+
         plt.scatter(x=label_cluster['ftr1'], y=label_cluster['ftr2'], s=70,\
                     edgecolor='k', marker=markers[label], label=cluster_legend)
-        
+
         if iscenter:
             center_x_y = centers[label]
             plt.scatter(x=center_x_y[0], y=center_x_y[1], s=250, color='white',
@@ -70,7 +71,7 @@ def visualize_cluster_plot(clusterobj, dataframe, label_name, iscenter=True):
     if isNoise:
         legend_loc='upper center'
     else: legend_loc='upper right'
-    
+
     plt.legend(loc=legend_loc)
     plt.show()
 
@@ -143,7 +144,7 @@ visualize_cluster_plot(None, clusterDF, 'target', iscenter=False)
 # %%
 
 
-# KMeans로 make_circles( ) 데이터 셋을 클러스터링 수행. 
+# KMeans로 make_circles( ) 데이터 셋을 클러스터링 수행.
 from sklearn.cluster import KMeans
 
 kmeans = KMeans(n_clusters=2, max_iter=1000, random_state=0)
@@ -156,7 +157,7 @@ visualize_cluster_plot(kmeans, clusterDF, 'kmeans_cluster', iscenter=True)
 # %%
 
 
-# GMM으로 make_circles( ) 데이터 셋을 클러스터링 수행. 
+# GMM으로 make_circles( ) 데이터 셋을 클러스터링 수행.
 from sklearn.mixture import GaussianMixture
 
 gmm = GaussianMixture(n_components=2, random_state=0)
@@ -169,7 +170,7 @@ visualize_cluster_plot(gmm, clusterDF, 'gmm_cluster', iscenter=False)
 # %%
 
 
-# DBSCAN으로 make_circles( ) 데이터 셋을 클러스터링 수행. 
+# DBSCAN으로 make_circles( ) 데이터 셋을 클러스터링 수행.
 from sklearn.cluster import DBSCAN
 
 dbscan = DBSCAN(eps=0.2, min_samples=10, metric='euclidean')
