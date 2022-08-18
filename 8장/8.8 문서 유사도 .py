@@ -18,8 +18,8 @@ import numpy as np
 def cos_similarity(v1, v2):
     dot_product = np.dot(v1, v2)
     l2_norm = (np.sqrt(sum(np.square(v1))) * np.sqrt(sum(np.square(v2))))
-    similarity = dot_product / l2_norm     
-    
+    similarity = dot_product / l2_norm
+
     return similarity
 
 
@@ -53,12 +53,12 @@ np.array(feature_vect_dense[0]).reshape(-1,)
 # %%
 
 
-# TFidfVectorizer로 transform()한 결과는 Sparse Matrix이므로 Dense Matrix로 변환. 
+# TFidfVectorizer로 transform()한 결과는 Sparse Matrix이므로 Dense Matrix로 변환.
 feature_vect_dense = feature_vect_simple.todense()
 
 #첫번째 문장과 두번째 문장의 feature vector  추출
-vect1 = np.array(feature_vect_dense[0]).reshape(-1,)
-vect2 = np.array(feature_vect_dense[1]).reshape(-1,)
+vect1 = np.array(feature_vect_dense[0]).reshape(-1,) # 1차원 배열로 변경
+vect2 = np.array(feature_vect_dense[1]).reshape(-1,) # 1차원 배열로 변경
 
 #첫번째 문장과 두번째 문장의 feature vector로 두개 문장의 Cosine 유사도 추출
 similarity_simple = cos_similarity(vect1, vect2 )
@@ -117,12 +117,12 @@ import string
 remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
 lemmar = WordNetLemmatizer()
 
-# 입력으로 들어온 token단어들에 대해서 lemmatization 어근 변환. 
+# 입력으로 들어온 token단어들에 대해서 lemmatization 어근 변환.
 def LemTokens(tokens):
     return [lemmar.lemmatize(token) for token in tokens]
 
 # TfidfVectorizer 객체 생성 시 tokenizer인자로 해당 함수를 설정하여 lemmatization 적용
-# 입력으로 문장을 받아서 stop words 제거-> 소문자 변환 -> 단어 토큰화 -> lemmatization 어근 변환. 
+# 입력으로 문장을 받아서 stop words 제거-> 소문자 변환 -> 단어 토큰화 -> lemmatization 어근 변환.
 def LemNormalize(text):
     return LemTokens(nltk.word_tokenize(text.lower().translate(remove_punct_dict)))
 
@@ -137,15 +137,14 @@ from sklearn.cluster import KMeans
 import warnings
 warnings.filterwarnings('ignore')
 
-#path = r'C:\Users\q\Text\OpinosisDataset1.0\OpinosisDataset1.0\topics'
-path = r'C:\Users\q\PerfectGuide\data\OpinosisDataset1.0\OpinosisDataset1.0\topics'
-all_files = glob.glob(os.path.join(path, "*.data"))     
+path = r'./data/OpinosisDataset1.0/topics'
+all_files = glob.glob(os.path.join(path, "*.data"))
 filename_list = []
 opinion_text = []
 
 for file_ in all_files:
     df = pd.read_table(file_,index_col=None, header=0,encoding='latin1')
-    filename_ = file_.split('\\')[-1]
+    filename_ = file_.split('/')[-1]
     filename = filename_.split('.')[0]
     filename_list.append(filename)
     opinion_text.append(df.to_string())
@@ -168,6 +167,9 @@ document_df['cluster_label'] = cluster_label
 
 document_df.head(51)
 
+# %%
+cluster_label
+document_df[document_df['cluster_label']==2][0:1]
 
 # %%
 
@@ -182,14 +184,15 @@ hotel_indexes
 from sklearn.metrics.pairwise import cosine_similarity
 
 # cluster_label=2인 데이터는 호텔로 클러스터링된 데이터임. DataFrame에서 해당 Index를 추출
+# (주의) sklearn 버젼차이로 인해 label 값이 다를 수 있습니다.
 hotel_indexes = document_df[document_df['cluster_label']==2].index
 print('호텔로 클러스터링 된 문서들의 DataFrame Index:', hotel_indexes)
 
-# 호텔로 클러스터링된 데이터 중 첫번째 문서를 추출하여 파일명 표시.  
+# 호텔로 클러스터링된 데이터 중 첫번째 문서를 추출하여 파일명 표시.
 comparison_docname = document_df.iloc[hotel_indexes[0]]['filename']
 print('##### 비교 기준 문서명 ',comparison_docname,' 와 타 문서 유사도######')
 
-''' document_df에서 추출한 Index 객체를 feature_vect로 입력하여 호텔 클러스터링된 feature_vect 추출 
+''' document_df에서 추출한 Index 객체를 feature_vect로 입력하여 호텔 클러스터링된 feature_vect 추출
 이를 이용하여 호텔로 클러스터링된 문서 중 첫번째 문서와 다른 문서간의 코사인 유사도 측정.'''
 similarity_pair = cosine_similarity(feature_vect[hotel_indexes[0]] , feature_vect[hotel_indexes])
 print(similarity_pair)
@@ -201,9 +204,10 @@ print(similarity_pair)
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
+from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'inline')
 
-# argsort()를 이용하여 앞예제의 첫번째 문서와 타 문서간 유사도가 큰 순으로 정렬한 인덱스 추출하되 자기 자신은 제외. 
+# argsort()를 이용하여 앞예제의 첫번째 문서와 타 문서간 유사도가 큰 순으로 정렬한 인덱스 추출하되 자기 자신은 제외.
 sorted_index = similarity_pair.argsort()[:,::-1]
 sorted_index = sorted_index[:, 1:]
 

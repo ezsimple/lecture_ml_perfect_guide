@@ -2,7 +2,7 @@
 # coding: utf-8
 
 # ### 20 뉴스그룹 분류
-# 
+#
 # **데이터 로딩과 데이터 구성 확인**
 
 # %%
@@ -14,16 +14,15 @@ news_data = fetch_20newsgroups(subset='all',random_state=156)
 
 
 # %%
-
-
+# bunch : dictionary와 비슷한 데이터 형태로 저장되어 있음
 type(news_data)
 
 
 # %%
-
-
 print(news_data.keys())
 
+# %%
+print(news_data.DESCR)
 
 # %%
 
@@ -67,9 +66,9 @@ print('학습 데이터 크기 {0} , 테스트 데이터 크기 {1}'.format(len(
 
 
 # ### 피처 벡터화 변환과 머신러닝 모델 학습/예측/평가
-# **주의: 학습 데이터에 대해 fit( )된 CountVectorizer를 이용해서 테스트 데이터를 피처 벡터화 해야함.**  
-# 
-# 테스트 데이터에서 다시 CountVectorizer의 fit_transform()을 수행하거나 fit()을 수행 하면 안됨.   
+# **주의: 학습 데이터에 대해 fit( )된 CountVectorizer를 이용해서 테스트 데이터를 피처 벡터화 해야함.**
+#
+# 테스트 데이터에서 다시 CountVectorizer의 fit_transform()을 수행하거나 fit()을 수행 하면 안됨.
 # 이는 이렇게 테스트 데이터에서 fit()을 수행하게 되면 기존 학습된 모델에서 가지는 feature의 갯수가 달라지기 때문임.
 
 # %%
@@ -77,12 +76,12 @@ print('학습 데이터 크기 {0} , 테스트 데이터 크기 {1}'.format(len(
 
 from sklearn.feature_extraction.text import CountVectorizer
 
-# Count Vectorization으로 feature extraction 변환 수행. 
+# Count Vectorization으로 feature extraction 변환 수행.
 cnt_vect = CountVectorizer()
 cnt_vect.fit(X_train)
 X_train_cnt_vect = cnt_vect.transform(X_train)
 
-# 학습 데이터로 fit( )된 CountVectorizer를 이용하여 테스트 데이터를 feature extraction 변환 수행. 
+# 학습 데이터로 fit( )된 CountVectorizer를 이용하여 테스트 데이터를 feature extraction 변환 수행.
 X_test_cnt_vect = cnt_vect.transform(X_test)
 
 print('학습 데이터 Text의 CountVectorizer Shape:',X_train_cnt_vect.shape)
@@ -96,8 +95,8 @@ from sklearn.metrics import accuracy_score
 import warnings
 warnings.filterwarnings('ignore')
 
-# LogisticRegression을 이용하여 학습/예측/평가 수행. 
-# LogisticRegression의 solver를 기본값인 lbfgs이 아닌 liblinear로 설정해야 학습이 오래 걸리지 않음. 
+# LogisticRegression을 이용하여 학습/예측/평가 수행.
+# LogisticRegression의 solver를 기본값인 lbfgs이 아닌 liblinear로 설정해야 학습이 오래 걸리지 않음.
 lr_clf = LogisticRegression(solver='liblinear')
 
 lr_clf.fit(X_train_cnt_vect , y_train)
@@ -113,13 +112,13 @@ print('CountVectorized Logistic Regression 의 예측 정확도는 {0:.3f}'.form
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# TF-IDF Vectorization 적용하여 학습 데이터셋과 테스트 데이터 셋 변환. 
+# TF-IDF Vectorization 적용하여 학습 데이터셋과 테스트 데이터 셋 변환.
 tfidf_vect = TfidfVectorizer()
 tfidf_vect.fit(X_train)
 X_train_tfidf_vect = tfidf_vect.transform(X_train)
 X_test_tfidf_vect = tfidf_vect.transform(X_test)
 
-# LogisticRegression을 이용하여 학습/예측/평가 수행. 
+# LogisticRegression을 이용하여 학습/예측/평가 수행.
 lr_clf = LogisticRegression(solver='liblinear')
 lr_clf.fit(X_train_tfidf_vect , y_train)
 pred = lr_clf.predict(X_test_tfidf_vect)
@@ -150,13 +149,13 @@ print('TF-IDF Vectorized Logistic Regression 의 예측 정확도는 {0:.3f}'.fo
 
 from sklearn.model_selection import GridSearchCV
 
-# 최적 C 값 도출 튜닝 수행. CV는 3 Fold셋으로 설정. 
+# 최적 C 값 도출 튜닝 수행. CV는 3 Fold셋으로 설정.
 params = { 'C':[0.01, 0.1, 1, 5, 10]}
 grid_cv_lr = GridSearchCV(lr_clf ,param_grid=params , cv=3 , scoring='accuracy' , verbose=1 )
 grid_cv_lr.fit(X_train_tfidf_vect , y_train)
 print('Logistic Regression best C parameter :',grid_cv_lr.best_params_ )
 
-# 최적 C 값으로 학습된 grid_cv로 예측 수행하고 정확도 평가. 
+# 최적 C 값으로 학습된 grid_cv로 예측 수행하고 정확도 평가.
 pred = grid_cv_lr.predict(X_test_tfidf_vect)
 print('TF-IDF Vectorized Logistic Regression 의 예측 정확도는 {0:.3f}'.format(accuracy_score(y_test ,pred)))
 
@@ -174,8 +173,8 @@ pipeline = Pipeline([
     ('lr_clf', LogisticRegression(solver='liblinear', C=10))
 ])
 
-# 별도의 TfidfVectorizer객체의 fit_transform( )과 LogisticRegression의 fit(), predict( )가 필요 없음. 
-# pipeline의 fit( ) 과 predict( ) 만으로 한꺼번에 Feature Vectorization과 ML 학습/예측이 가능. 
+# 별도의 TfidfVectorizer객체의 fit_transform( )과 LogisticRegression의 fit(), predict( )가 필요 없음.
+# pipeline의 fit( ) 과 predict( ) 만으로 한꺼번에 Feature Vectorization과 ML 학습/예측이 가능.
 pipeline.fit(X_train, y_train)
 pred = pipeline.predict(X_test)
 print('Pipeline을 통한 Logistic Regression 의 예측 정확도는 {0:.3f}'.format(accuracy_score(y_test ,pred)))
@@ -191,8 +190,8 @@ pipeline = Pipeline([
     ('lr_clf', LogisticRegression(solver='liblinear'))
 ])
 
-# Pipeline에 기술된 각각의 객체 변수에 언더바(_)2개를 연달아 붙여 GridSearchCV에 사용될 
-# 파라미터/하이퍼 파라미터 이름과 값을 설정. . 
+# Pipeline에 기술된 각각의 객체 변수에 언더바(_)2개를 연달아 붙여 GridSearchCV에 사용될
+# 파라미터/하이퍼 파라미터 이름과 값을 설정. .
 params = { 'tfidf_vect__ngram_range': [(1,1), (1,2), (1,3)],
            'tfidf_vect__max_df': [100, 300, 700],
            'lr_clf__C': [1,5,10]

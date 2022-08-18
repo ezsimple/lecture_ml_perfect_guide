@@ -8,8 +8,14 @@
 # **문장 토큰화**
 
 # %%
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 
+# %%
 from nltk import sent_tokenize
 text_sample = 'The Matrix is everywhere its all around us, here even in this room.  \
               You can see it out your window or on your television. \
@@ -26,7 +32,7 @@ print(sentences)
 
 from nltk import word_tokenize
 
-sentence = "The Matrix is everywhere its all around us, here even in this room."
+sentence = sentences[0]
 words = word_tokenize(sentence)
 print(type(words), len(words))
 print(words)
@@ -41,14 +47,14 @@ from nltk import word_tokenize, sent_tokenize
 
 #여러개의 문장으로 된 입력 데이터를 문장별로 단어 토큰화 만드는 함수 생성
 def tokenize_text(text):
-    
+
     # 문장별로 분리 토큰
     sentences = sent_tokenize(text)
     # 분리된 문장별 단어 토큰화
     word_tokens = [word_tokenize(sentence) for sentence in sentences]
     return word_tokens
 
-#여러 문장들에 대해 문장별 단어 토큰화 수행. 
+#여러 문장들에 대해 문장별 단어 토큰화 수행.
 word_tokens = tokenize_text(text_sample)
 print(type(word_tokens),len(word_tokens))
 print(word_tokens)
@@ -97,21 +103,22 @@ for sentence in word_tokens:
     filtered_words=[]
     # 개별 문장별로 tokenize된 sentence list에 대해 stop word 제거 Loop
     for word in sentence:
-        #소문자로 모두 변환합니다. 
+        #소문자로 모두 변환합니다.
         word = word.lower()
         # tokenize 된 개별 word가 stop words 들의 단어에 포함되지 않으면 word_tokens에 추가
         if word not in stopwords:
             filtered_words.append(word)
     all_tokens.append(filtered_words)
-    
+
 print(all_tokens)
 
 
-# ### Stemming과 Lemmatization
 
 # %%
 
 
+# 어근 찾기
+# ### Stemming과 Lemmatization
 from nltk.stem import LancasterStemmer
 stemmer = LancasterStemmer()
 
@@ -149,14 +156,13 @@ text.append(text_sample_01); text.append(text_sample_02)
 print(text,"\n", len(text))
 
 
-# **CountVectorizer객체 생성 후 fit(), transform()으로 텍스트에 대한 feature vectorization 수행**
 
 # %%
-
+# **CountVectorizer객체 생성 후 fit(), transform()으로 텍스트에 대한 feature vectorization 수행**
 
 from sklearn.feature_extraction.text import CountVectorizer
 
-# Count Vectorization으로 feature extraction 변환 수행. 
+# Count Vectorization으로 feature extraction 변환 수행.
 cnt_vect = CountVectorizer()
 cnt_vect.fit(text)
 
@@ -196,15 +202,15 @@ print(cnt_vect.vocabulary_)
 
 # %%
 
-
-cnt_vect = CountVectorizer(ngram_range=(1,3))
+# ngram_range(1,3) => trigram 으로 feature extraction 변환 수행.
+cnt_vect = CountVectorizer(ngram_range=(1,3), stop_words='english')
 cnt_vect.fit(text)
 ftr_vect = cnt_vect.transform(text)
 print(type(ftr_vect), ftr_vect.shape)
 print(cnt_vect.vocabulary_)
 
 
-# 
+#
 
 # ### 희소 행렬 - COO 형식
 
@@ -213,7 +219,7 @@ print(cnt_vect.vocabulary_)
 
 import numpy as np
 
-dense = np.array( [ [ 3, 0, 1 ], 
+dense = np.array( [ [ 3, 0, 1 ],
                     [0, 2, 0 ] ] )
 
 
@@ -225,7 +231,7 @@ from scipy import sparse
 # 0 이 아닌 데이터 추출
 data = np.array([3,1,2])
 
-# 행 위치와 열 위치를 각각 array로 생성 
+# 행 위치와 열 위치를 각각 array로 생성
 row_pos = np.array([0,0,1])
 col_pos = np.array([0,2,1])
 
@@ -247,7 +253,7 @@ print(type(dense01),"\n", dense01)
 # %%
 
 
-from scipy import sparse
+from scipy.sparse import coo_matrix, csr_matrix
 
 dense2 = np.array([[0,0,1,0,0,5],
              [1,4,0,3,2,5],
@@ -259,18 +265,18 @@ dense2 = np.array([[0,0,1,0,0,5],
 # 0 이 아닌 데이터 추출
 data2 = np.array([1, 5, 1, 4, 3, 2, 5, 6, 3, 2, 7, 8, 1])
 
-# 행 위치와 열 위치를 각각 array로 생성 
+# 행 위치와 열 위치를 각각 array로 생성
 row_pos = np.array([0, 0, 1, 1, 1, 1, 1, 2, 2, 3, 4, 4, 5])
 col_pos = np.array([2, 5, 0, 1, 3, 4, 5, 1, 3, 0, 3, 5, 0])
 
-# COO 형식으로 변환 
-sparse_coo = sparse.coo_matrix((data2, (row_pos,col_pos)))
+# COO 형식으로 변환
+sparse_coo = coo_matrix((data2, (row_pos,col_pos)))
 
 # 행 위치 배열의 고유한 값들의 시작 위치 인덱스를 배열로 생성
 row_pos_ind = np.array([0, 2, 7, 9, 10, 12, 13])
 
-# CSR 형식으로 변환 
-sparse_csr = sparse.csr_matrix((data2, col_pos, row_pos_ind))
+# CSR 형식으로 변환
+sparse_csr = csr_matrix((data2, col_pos, row_pos_ind))
 
 print('COO 변환된 데이터가 제대로 되었는지 다시 Dense로 출력 확인')
 print(sparse_coo.toarray())
@@ -294,8 +300,10 @@ dense3 = np.array([[0,0,1,0,0,5],
              [0,0,0,7,0,8],
              [1,0,0,0,0,0]])
 
-coo = sparse.coo_matrix(dense3)
-csr = sparse.csr_matrix(dense3)
+coo = coo_matrix(dense3)
+csr = csr_matrix(dense3)
+print(coo)
+print(csr)
 
 
 # %%
