@@ -208,6 +208,7 @@ from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 # argsort()를 이용하여 앞예제의 첫번째 문서와 타 문서간 유사도가 큰 순으로 정렬한 인덱스 추출하되 자기 자신은 제외.
+# (중요) argsort 기능
 sorted_index = similarity_pair.argsort()[:,::-1]
 sorted_index = sorted_index[:, 1:]
 

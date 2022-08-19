@@ -21,7 +21,8 @@ warnings.filterwarnings('ignore')
 # Naver sentiment movie corpus v1.0
 # https://github.com/e9t/nsmc
 # encoding='utf-8'으로 저장함
-train_df = pd.read_csv('./data/ratings_train.txt', sep='\t')
+file_train = './data/ratings_train.txt'
+train_df = pd.read_csv(file_train, sep='\t')
 train_df.head(10)
 
 
@@ -47,7 +48,8 @@ train_df = train_df.fillna(' ')
 train_df['document'] = train_df['document'].apply( lambda x : re.sub(r"\d+", " ", x) )
 
 # 테스트 데이터 셋을 로딩하고 동일하게 Null 및 숫자를 공백으로 변환.
-test_df = pd.read_csv('ratings_test.txt', sep='\t') # 한글 encoding시 encoding='cp949' 적용.
+file_test = './data/ratings_test.txt'
+test_df = pd.read_csv(file_test, sep='\t') # 한글 encoding시 encoding='cp949' 적용.
 test_df = test_df.fillna(' ')
 test_df['document'] = test_df['document'].apply( lambda x : re.sub(r"\d+", " ", x) )
 
@@ -115,6 +117,7 @@ test_df.head()
 from sklearn.metrics import accuracy_score
 
 # 학습 데이터를 적용한 TfidfVectorizer를 이용하여 테스트 데이터를 TF-IDF 값으로 Feature 변환함.
+# (주의) tfidf_vect는 이미 fit() 되어 있음.
 tfidf_matrix_test = tfidf_vect.transform(test_df['document'])
 
 # classifier 는 GridSearchCV에서 최적 파라미터로 학습된 classifier를 그대로 이용
