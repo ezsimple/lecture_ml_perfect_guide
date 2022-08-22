@@ -124,7 +124,8 @@ R = np.array([[4, np.NaN, np.NaN, 2, np.NaN ],
 
 # %%
 
-
+# R : 원본행렬
+# K : 행렬 분해 개수
 def matrix_factorization(R, K, steps=200, learning_rate=0.01, r_lambda = 0.01):
     num_users, num_items = R.shape
     # P와 Q 매트릭스의 크기를 지정하고 정규분포를 가진 랜덤한 값으로 입력합니다.
@@ -159,8 +160,8 @@ def matrix_factorization(R, K, steps=200, learning_rate=0.01, r_lambda = 0.01):
 import pandas as pd
 import numpy as np
 
-movies = pd.read_csv('./ml-latest-small/movies.csv')
-ratings = pd.read_csv('./ml-latest-small/ratings.csv')
+movies = pd.read_csv('./data/movies.csv')
+ratings = pd.read_csv('./data/movie_ratings.csv')
 ratings = ratings[['userId', 'movieId', 'rating']]
 ratings_matrix = ratings.pivot_table('rating', index='userId', columns='movieId')
 
@@ -173,7 +174,8 @@ ratings_matrix = rating_movies.pivot_table('rating', index='userId', columns='ti
 
 # %%
 
-
+# 행렬분해에 10여분정도 소요됩니다.
+# step이 증가할수록 rmse 값이 점점 작아집니다.
 P, Q = matrix_factorization(ratings_matrix.values, K=50, steps=200, learning_rate=0.01, r_lambda = 0.01)
 pred_matrix = np.dot(P, Q.T)
 
