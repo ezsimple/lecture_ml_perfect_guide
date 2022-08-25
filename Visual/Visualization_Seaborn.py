@@ -255,6 +255,7 @@ sns.violinplot(y='Age', data=titanic_df)
 
 
 # x축값인 Pclass의 값별로 y축 값인 Age의 연속분포 곡선을 알 수 있음.
+# (주의) x축은 카테고리형 데이터이면 좋습니다.
 sns.violinplot(x='Pclass', y='Age', data=titanic_df)
 
 
@@ -262,6 +263,7 @@ sns.violinplot(x='Pclass', y='Age', data=titanic_df)
 
 
 # x축인 Sex값 별로 y축값이 Age의 값 분포를 알 수 있음.
+# (주의) 분포도를 비교할 수 있는 좋은 그래프 입니다.
 sns.violinplot(x='Sex', y='Age', data=titanic_df)
 
 
@@ -271,7 +273,8 @@ sns.violinplot(x='Sex', y='Age', data=titanic_df)
 
 
 fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(12, 4))
-
+# axs는 ndarray 입니다.
+print(type(axs), len(axs))
 
 # %%
 
@@ -362,7 +365,7 @@ sns.boxplot(y='Age', data=titanic_df)
 
 # %%
 
-
+# IQR(25% ~ 75%)를 나타내고, outlier(이상치) 검출에 좋습니다.
 sns.boxplot(x='Pclass', y='Age', data=titanic_df)
 
 
@@ -383,7 +386,9 @@ sns.scatterplot(x='Age', y='Fare', data=titanic_df)
 
 # %%
 
+sns.scatterplot(x='Age', y='Fare', data=titanic_df, hue='Pclass')
 
+# %%
 sns.scatterplot(x='Age', y='Fare', data=titanic_df, hue='Pclass', style='Survived')
 
 
@@ -391,8 +396,7 @@ sns.scatterplot(x='Age', y='Fare', data=titanic_df, hue='Pclass', style='Survive
 # * 컬럼간의 상관도를 Heatmap형태로 표현
 
 # %%
-
-
+# 각 컬럼만의 상관도를 나타냅니다. (서로의 관게를 나타내는 도표)
 titanic_df.corr()
 
 
@@ -400,14 +404,15 @@ titanic_df.corr()
 
 
 ### 상관 Heatmap
+plt.rc('axes', unicode_minus = False) # 한글 폰트 사용시 마이너스 폰트가 깨지는 문제 해결
 
 plt.figure(figsize=(8, 8))
 
 # DataFrame의 corr()은 숫자형 값만 상관도를 구함.
 corr = titanic_df.corr()
 
-sns.heatmap(corr, annot=True, fmt='.1f',  linewidths=0.5, cmap='YlGnBu')
-#sns.heatmap(corr, annot=True, fmt='.2g', cbar=True, linewidths=0.5, cmap='YlGnBu')
+# sns.heatmap(corr, annot=True, fmt='.1f',  linewidths=0.5, cmap='YlGnBu')
+sns.heatmap(corr, annot=True, fmt='.1g', cbar=True, linewidths=0.5)
 
 
 # %%
